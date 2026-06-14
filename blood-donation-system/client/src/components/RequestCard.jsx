@@ -52,34 +52,36 @@ const RequestCard = ({
               <span className="text-gray-500">of</span>
               <span className="text-blood-400 font-bold">{request.blood_group}</span>
             </div>
-            {showRecipient && request.recipient_name && (
-              <div className="text-xs mt-2 space-y-1 bg-gray-900/30 border border-gray-800/40 p-2.5 rounded-xl">
-                <div className="font-semibold text-gray-300 flex items-center gap-1.5">
-                  <span>🏢</span>
-                  <span>{request.recipient_name}</span>
-                </div>
-                <div className="text-gray-500 flex items-center gap-1.5 pl-5 min-w-0">
-                  <span>✉️</span>
-                  <span className="truncate">{request.recipient_email}</span>
-                </div>
-                {request.recipient_phone && (
-                  <div className="text-gray-400 flex items-center gap-1.5 pl-5">
-                    <span>📞</span>
-                    <span>{request.recipient_phone}</span>
-                  </div>
-                )}
-                {request.recipient_address && (
-                  <div className="text-gray-400 flex items-start gap-1.5 pl-5">
-                    <span className="mt-0.5">📍</span>
-                    <span className="break-words">{request.recipient_address}</span>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </div>
         <span className={status.class}>{status.label}</span>
       </div>
+
+      {/* Recipient Details (Full width on mobile) */}
+      {showRecipient && request.recipient_name && (
+        <div className="text-xs mb-3 space-y-1 bg-gray-900/30 border border-gray-800/40 p-2.5 rounded-xl">
+          <div className="font-semibold text-gray-300 flex items-center gap-1.5">
+            <span>🏢</span>
+            <span>{request.recipient_name}</span>
+          </div>
+          <div className="text-gray-500 flex items-center gap-1.5 pl-5 min-w-0">
+            <span>✉️</span>
+            <span className="truncate">{request.recipient_email}</span>
+          </div>
+          {request.recipient_phone && (
+            <div className="text-gray-400 flex items-center gap-1.5 pl-5">
+              <span>📞</span>
+              <span>{request.recipient_phone}</span>
+            </div>
+          )}
+          {request.recipient_address && (
+            <div className="text-gray-400 flex items-start gap-1.5 pl-5">
+              <span className="mt-0.5">📍</span>
+              <span className="break-words">{request.recipient_address}</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Details */}
       <div className="space-y-2 text-sm text-gray-400 mb-4">

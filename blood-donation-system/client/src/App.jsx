@@ -37,7 +37,7 @@ const Home = () => (
     </p>
 
     <div className="flex flex-col gap-3 animate-fade-in w-full max-w-xs sm:max-w-none sm:flex-row sm:justify-center sm:gap-4">
-      <Link to="/register?role=donor" id="home-donor-btn" className="btn-primary text-sm sm:text-base px-6 py-2.5 text-center">
+      <Link to="/register?role=donor" id="home-donor-btn" className="btn-secondary text-sm sm:text-base px-6 py-2.5 border-blood-700 text-blood-300 hover:bg-blood-900/40 text-center">
         🩸 Become a Donor
       </Link>
       <Link to="/register?role=recipient" id="home-recipient-btn" className="btn-secondary text-sm sm:text-base px-6 py-2.5 border-blue-700 text-blue-300 hover:bg-blue-900/40 text-center">
