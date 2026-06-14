@@ -29,7 +29,7 @@ const DonorCard = ({ donor, showActions = false, onToggleEligibility }) => {
   const bgColor = bloodGroupColors[donor.blood_group] || 'bg-gray-800 text-gray-300 border-gray-700';
 
   return (
-    <div className="bg-gray-800/60 border border-gray-700 rounded-2xl p-5 hover:border-gray-600 transition-all duration-200 animate-slide-up">
+    <div className="bg-gray-800/60 border border-gray-700 rounded-2xl p-4 sm:p-5 hover:border-gray-600 transition-all duration-200 animate-slide-up overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-4 mb-4">
         <div className={`w-14 h-14 rounded-full border-2 flex items-center justify-center font-bold text-lg ${bgColor}`}>

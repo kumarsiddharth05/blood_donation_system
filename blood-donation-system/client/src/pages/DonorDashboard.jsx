@@ -21,7 +21,7 @@ const StatusBadge = ({ status }) => {
   return <span className={map[status] || 'badge-pending'}>{status}</span>;
 };
 
-const DonorDashboard = () => {
+const DonorDashboard = ({ activeTab = 'overview', onTabChange }) => {
   const { user } = useAuth();
   const donorId  = user?.profile_id;
 
@@ -31,7 +31,6 @@ const DonorDashboard = () => {
   const [banks,     setBanks]     = useState([]);
 
   const [loading,  setLoading]  = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
 
   // Donate form state
   const [donateForm, setDonateForm] = useState({ bank_id: '', donation_date: '', units_donated: 1 });
@@ -151,23 +150,7 @@ const DonorDashboard = () => {
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="tab-bar">
-        {['overview', 'history', 'inventory'].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`tab-btn ${
-              activeTab === tab
-                ? 'tab-btn-active bg-blood-700'
-                : 'tab-btn-inactive'
-            }`}
-            id={`donor-tab-${tab}`}
-          >
-            {tab === 'overview' ? '📋 Overview' : tab === 'history' ? '💉 History' : '🩸 Inventory'}
-          </button>
-        ))}
-      </div>
+
 
       {/* ── OVERVIEW TAB ─────────────────────────────────────────────── */}
       {activeTab === 'overview' && (

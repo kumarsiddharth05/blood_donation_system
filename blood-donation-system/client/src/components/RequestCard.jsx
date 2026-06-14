@@ -39,9 +39,9 @@ const RequestCard = ({
   const status  = statusConfig[request.status]   || statusConfig.pending;
 
   return (
-    <div className="bg-gray-800/60 border border-gray-700 rounded-2xl p-5 hover:border-gray-600 transition-all duration-200 animate-slide-up">
+    <div className="bg-gray-800/60 border border-gray-700 rounded-2xl p-4 sm:p-5 hover:border-gray-600 transition-all duration-200 animate-slide-up overflow-hidden">
       {/* Header row */}
-      <div className="flex items-start justify-between gap-4 mb-4">
+      <div className="flex items-start justify-between gap-2 mb-3 sm:mb-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-blood-900/60 border border-blood-700/50 flex items-center justify-center font-bold text-blood-300">
             {request.blood_group}
@@ -58,9 +58,9 @@ const RequestCard = ({
                   <span>🏢</span>
                   <span>{request.recipient_name}</span>
                 </div>
-                <div className="text-gray-500 flex items-center gap-1.5 pl-5">
+                <div className="text-gray-500 flex items-center gap-1.5 pl-5 min-w-0">
                   <span>✉️</span>
-                  <span>{request.recipient_email}</span>
+                  <span className="truncate">{request.recipient_email}</span>
                 </div>
                 {request.recipient_phone && (
                   <div className="text-gray-400 flex items-center gap-1.5 pl-5">

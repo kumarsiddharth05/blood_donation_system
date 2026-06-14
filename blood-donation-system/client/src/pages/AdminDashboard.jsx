@@ -32,7 +32,7 @@ const SummaryCard = ({ label, value, color, icon }) => (
 
 const TABS = ['overview', 'inventory', 'requests', 'donors', 'donations'];
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ activeTab = 'overview', onTabChange }) => {
   const { user } = useAuth();
   const [summary,   setSummary]   = useState(null);
   const [inventory, setInventory] = useState([]);
@@ -41,7 +41,6 @@ const AdminDashboard = () => {
   const [donations, setDonations] = useState([]);
 
   const [loading,   setLoading]   = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
 
   // Inventory edit modal state
   const [editRow,      setEditRow]      = useState(null);
@@ -228,29 +227,7 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="tab-bar">
-        {TABS.map((tab) => {
-          const labels = {
-            overview: '📊 Overview', inventory: '🩸 Inventory',
-            requests: '📋 Requests', donors: '👤 Donors', donations: '💉 Donations',
-          };
-          return (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`tab-btn ${
-                activeTab === tab
-                  ? 'tab-btn-active bg-purple-700'
-                  : 'tab-btn-inactive'
-              }`}
-              id={`admin-tab-${tab}`}
-            >
-              {labels[tab]}
-            </button>
-          );
-        })}
-      </div>
+
 
       {/* ── OVERVIEW TAB ─────────────────────────────────────────────── */}
       {activeTab === 'overview' && (

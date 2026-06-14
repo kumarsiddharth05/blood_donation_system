@@ -6,7 +6,7 @@ import RequestCard from '../components/RequestCard';
 const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 const URGENCY_OPTS = ['low', 'medium', 'high'];
 
-const RecipientDashboard = () => {
+const RecipientDashboard = ({ activeTab = 'requests', onTabChange }) => {
   const { user }       = useAuth();
   const recipientId    = user?.profile_id;
 
@@ -15,7 +15,6 @@ const RecipientDashboard = () => {
   const [banks,     setBanks]     = useState([]);
   const [matches,   setMatches]   = useState([]);
   const [loading,   setLoading]   = useState(true);
-  const [activeTab, setActiveTab] = useState('requests');
 
   // Profile form state
   const [profileForm, setProfileForm] = useState({
@@ -59,7 +58,7 @@ const RecipientDashboard = () => {
       });
       // If profile is incomplete, force Profile tab
       if (!p.phone || !p.address) {
-        setActiveTab('profile');
+        onTabChange && onTabChange('profile');
         setProfileEditing(true);
       }
       setRequests(reqRes.data.data);
@@ -234,26 +233,7 @@ const RecipientDashboard = () => {
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="tab-bar">
-        {TABS.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`tab-btn ${
-              activeTab === tab.key
-                ? 'tab-btn-active bg-blue-700'
-                : 'tab-btn-inactive'
-            }`}
-            id={`recipient-tab-${tab.key}`}
-          >
-            {tab.label}
-            {tab.key === 'profile' && !isProfileComplete && (
-              <span className="ml-1.5 w-2 h-2 bg-amber-400 rounded-full inline-block animate-pulse" />
-            )}
-          </button>
-        ))}
-      </div>
+
 
       {/* ── PROFILE TAB ───────────────────────────────────────────────── */}
       {activeTab === 'profile' && (
@@ -370,7 +350,7 @@ const RecipientDashboard = () => {
             <div className="card text-center py-10">
               <p className="text-4xl mb-3">🏥</p>
               <p className="text-gray-400 mb-3">Complete your profile before making blood requests.</p>
-              <button onClick={() => setActiveTab('profile')} className="btn-primary text-sm">
+              <button onClick={() => onTabChange && onTabChange('profile')} className="btn-primary text-sm">
                 Complete Profile →
               </button>
             </div>
@@ -472,7 +452,7 @@ const RecipientDashboard = () => {
             <div className="card text-center py-10">
               <p className="text-4xl mb-3">🔍</p>
               <p className="text-gray-400 mb-3">Complete your hospital profile to access the blood matching engine.</p>
-              <button onClick={() => setActiveTab('profile')} className="btn-primary text-sm">Complete Profile →</button>
+              <button onClick={() => onTabChange && onTabChange('profile')} className="btn-primary text-sm">Complete Profile →</button>
             </div>
           ) : (
             <div className="card">
