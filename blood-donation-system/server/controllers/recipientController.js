@@ -133,9 +133,20 @@ const matchBlood = async (req, res) => {
         data: matches,
       });
     } else {
-      // Fallback to stored procedure
-      const [results] = await db.query('CALL match_blood(?)', [id]);
-      const matches = results[0];
+      // Direct SQL query instead of stored procedure (TiDB compatibility)
+      const [matches] = await db.query(
+        `SELECT b.name AS bank_name, b.location, b.phone AS bank_phone,
+                i.blood_group AS available_blood_group, i.units_available
+         FROM blood_inventory i
+         JOIN blood_banks b ON i.bank_id = b.bank_id
+         WHERE i.blood_group IN (
+           SELECT donor_group FROM blood_compatibility
+           WHERE recipient_group = (SELECT blood_group_needed FROM recipients WHERE recipient_id = ?)
+         )
+         AND i.units_available > 0
+         ORDER BY i.units_available DESC`,
+        [id]
+      );
 
       return res.status(200).json({
         success: true,
@@ -147,7 +158,7 @@ const matchBlood = async (req, res) => {
     console.error('matchBlood error:', err);
     return res.status(500).json({
       success: false,
-      message: 'Server error calling match_blood procedure.',
+      message: 'Server error matching compatible blood sources.',
       data: null,
     });
   }

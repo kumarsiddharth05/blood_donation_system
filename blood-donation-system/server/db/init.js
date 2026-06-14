@@ -279,49 +279,7 @@ async function run() {
     console.log('✅ Users, donors, recipients, donations, requests seeded\n');
 
     // ── Triggers ─────────────────────────────────────────────────────
-    console.log('⚙️  Creating triggers...');
-
-    await conn.query(`
-      CREATE TRIGGER after_donation_completed
-      AFTER UPDATE ON donations
-      FOR EACH ROW
-      BEGIN
-        IF NEW.status = 'completed' AND OLD.status != 'completed' THEN
-          UPDATE blood_inventory
-          SET units_available = units_available + NEW.units_donated
-          WHERE bank_id = NEW.bank_id
-            AND blood_group = (SELECT blood_group FROM donors WHERE donor_id = NEW.donor_id);
-        END IF;
-      END
-    `);
-
-    await conn.query(`
-      CREATE TRIGGER after_donation_mark_ineligible
-      AFTER UPDATE ON donations
-      FOR EACH ROW
-      BEGIN
-        IF NEW.status = 'completed' AND OLD.status != 'completed' THEN
-          UPDATE donors
-          SET is_eligible = FALSE, last_donation_date = NEW.donation_date
-          WHERE donor_id = NEW.donor_id;
-        END IF;
-      END
-    `);
-
-    await conn.query(`
-      CREATE TRIGGER after_request_approved
-      AFTER UPDATE ON blood_requests
-      FOR EACH ROW
-      BEGIN
-        IF NEW.status = 'approved' AND OLD.status != 'approved' THEN
-          UPDATE blood_inventory
-          SET units_available = units_available - NEW.units_needed
-          WHERE bank_id = NEW.bank_id AND blood_group = NEW.blood_group;
-        END IF;
-      END
-    `);
-
-    console.log('✅ Triggers created');
+    console.log('⚙️  Triggers creation skipped (not supported on TiDB Cloud Serverless)');
 
     // ── Views ─────────────────────────────────────────────────────────
     await conn.query(`
@@ -344,27 +302,8 @@ async function run() {
     console.log('✅ Views created');
 
     // ── Stored Procedure ─────────────────────────────────────────────
-    await conn.query(`
-      CREATE PROCEDURE match_blood(IN p_recipient_id INT)
-      BEGIN
-        DECLARE v_blood_group VARCHAR(5);
-        SELECT blood_group_needed INTO v_blood_group
-        FROM recipients WHERE recipient_id = p_recipient_id;
+    console.log('⚙️  Stored procedure creation skipped (not supported on TiDB Cloud Serverless)');
 
-        SELECT b.name AS bank_name, b.location, b.phone AS bank_phone,
-               i.blood_group AS available_blood_group, i.units_available
-        FROM blood_inventory i
-        JOIN blood_banks b ON i.bank_id = b.bank_id
-        WHERE i.blood_group IN (
-          SELECT donor_group FROM blood_compatibility
-          WHERE recipient_group = v_blood_group
-        )
-        AND i.units_available > 0
-        ORDER BY i.units_available DESC;
-      END
-    `);
-
-    console.log('✅ Stored procedure created');
 
     // ── Done ──────────────────────────────────────────────────────────
     console.log('\n🎉 Database initialization COMPLETE!\n');

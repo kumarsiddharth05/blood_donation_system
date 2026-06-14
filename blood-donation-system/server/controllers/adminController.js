@@ -92,18 +92,46 @@ const updateRequestStatus = async (req, res) => {
     return res.status(400).json({ success: false, message: "status must be 'approved', 'rejected', or 'pending'.", data: null });
   }
   const bankId = req.user.profile_id;
+  let conn;
   try {
-    const [result] = await db.query(
+    conn = await db.getConnection();
+    await conn.beginTransaction();
+
+    // Fetch the current request details
+    const [rows] = await conn.query(
+      'SELECT status, units_needed, blood_group, bank_id FROM blood_requests WHERE request_id = ? AND bank_id = ? FOR UPDATE',
+      [id, bankId]
+    );
+    if (rows.length === 0) {
+      await conn.rollback();
+      return res.status(404).json({ success: false, message: 'Request not found.', data: null });
+    }
+    const currentRequest = rows[0];
+
+    // Update status
+    await conn.query(
       'UPDATE blood_requests SET status = ? WHERE request_id = ? AND bank_id = ?',
       [status, id, bankId]
     );
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, message: 'Request not found.', data: null });
+
+    // Replicate database trigger behavior: decrement blood inventory if approved
+    if (status === 'approved' && currentRequest.status !== 'approved') {
+      await conn.query(
+        `UPDATE blood_inventory
+         SET units_available = units_available - ?
+         WHERE bank_id = ? AND blood_group = ?`,
+        [currentRequest.units_needed, currentRequest.bank_id, currentRequest.blood_group]
+      );
     }
+
+    await conn.commit();
     return res.status(200).json({ success: true, message: `Request ${status}.`, data: null });
   } catch (err) {
+    if (conn) await conn.rollback();
     console.error('updateRequestStatus error:', err);
     return res.status(500).json({ success: false, message: 'Server error.', data: null });
+  } finally {
+    if (conn) conn.release();
   }
 };
 
@@ -193,18 +221,56 @@ const updateDonationStatus = async (req, res) => {
     return res.status(400).json({ success: false, message: "status must be 'pending', 'completed', or 'rejected'.", data: null });
   }
   const bankId = req.user.profile_id;
+  let conn;
   try {
-    const [result] = await db.query(
+    conn = await db.getConnection();
+    await conn.beginTransaction();
+
+    // Fetch original donation details
+    const [rows] = await conn.query(
+      'SELECT status, donor_id, bank_id, units_donated, donation_date FROM donations WHERE donation_id = ? AND bank_id = ? FOR UPDATE',
+      [id, bankId]
+    );
+    if (rows.length === 0) {
+      await conn.rollback();
+      return res.status(404).json({ success: false, message: 'Donation not found.', data: null });
+    }
+    const currentDonation = rows[0];
+
+    // Update status
+    await conn.query(
       'UPDATE donations SET status = ? WHERE donation_id = ? AND bank_id = ?',
       [status, id, bankId]
     );
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, message: 'Donation not found.', data: null });
+
+    // Replicate database trigger behavior if status changes to completed
+    if (status === 'completed' && currentDonation.status !== 'completed') {
+      // 1. after_donation_completed: Update blood inventory
+      await conn.query(
+        `UPDATE blood_inventory
+         SET units_available = units_available + ?
+         WHERE bank_id = ?
+           AND blood_group = (SELECT blood_group FROM donors WHERE donor_id = ?)`,
+        [currentDonation.units_donated, currentDonation.bank_id, currentDonation.donor_id]
+      );
+
+      // 2. after_donation_mark_ineligible: Update donor eligibility
+      await conn.query(
+        `UPDATE donors
+         SET is_eligible = FALSE, last_donation_date = ?
+         WHERE donor_id = ?`,
+        [currentDonation.donation_date, currentDonation.donor_id]
+      );
     }
+
+    await conn.commit();
     return res.status(200).json({ success: true, message: `Donation marked as ${status}.`, data: null });
   } catch (err) {
+    if (conn) await conn.rollback();
     console.error('updateDonationStatus error:', err);
     return res.status(500).json({ success: false, message: 'Server error.', data: null });
+  } finally {
+    if (conn) conn.release();
   }
 };
 
