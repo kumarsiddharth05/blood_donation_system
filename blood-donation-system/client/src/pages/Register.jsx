@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../api/axios';
 
@@ -22,28 +22,23 @@ const Register = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    role: 'donor',
-    // Donor fields
-    blood_group: '',
-    dob: '',
-    phone: '',
-    address: '',
-    // Recipient fields
-    // (phone and address are shared with donor)
-  });
-
-  // Pre-select role from ?role= query param (set by home page buttons)
-  useEffect(() => {
+  // Initialize role directly from the URL param so the correct role section
+  // is shown on the very first render — no flash, no useEffect needed.
+  const [form, setForm] = useState(() => {
     const roleParam = searchParams.get('role');
-    if (ROLES.includes(roleParam)) {
-      setForm((prev) => ({ ...prev, role: roleParam }));
-    }
-  }, [searchParams]);
+    return {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      role: ROLES.includes(roleParam) ? roleParam : 'donor',
+      // Donor fields
+      blood_group: '',
+      dob: '',
+      phone: '',
+      address: '',
+    };
+  });
 
   const [error, setError]     = useState('');
   const [success, setSuccess] = useState('');
