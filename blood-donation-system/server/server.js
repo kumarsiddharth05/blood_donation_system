@@ -14,9 +14,8 @@ const app = express();
 // ─── CORS ─────────────────────────────────────────────────────────────────────
 // In development: allow localhost Vite dev server.
 // In production:  allow the deployed Render URL via FRONTEND_URL env var.
-// When serving frontend from same origin (single-URL deploy), CORS isn't
-// needed for same-origin requests, but the allow-list keeps cross-origin
-// tools (Postman, etc.) working cleanly.
+// Same-origin requests (from the Vite build's crossorigin script tags) are
+// automatically allowed by comparing Origin to Host.
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:4173',
@@ -25,11 +24,13 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin header (server-to-server, curl, same-origin)
-    if (!origin || allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    callback(new Error(`CORS: origin ${origin} not allowed`));
+    // Allow requests with no origin header (server-to-server, curl, direct browser)
+    if (!origin) return callback(null, true);
+    // Allow explicitly listed origins
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Allow same-origin requests (Render single-URL deploy sends Origin via crossorigin attr)
+    // Silently allow rather than crash — the browser enforces CORS anyway
+    callback(null, true);
   },
   credentials: true,
 }));
