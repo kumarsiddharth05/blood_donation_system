@@ -32,6 +32,23 @@ const register = async (req, res) => {
     });
   }
 
+  // Validate 10-digit phone numbers
+  const phoneRegex = /^\d{10}$/;
+  if ((role === 'donor' || role === 'recipient') && phone && !phoneRegex.test(phone)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Phone number must be exactly 10 digits.',
+      data: null,
+    });
+  }
+  if (role === 'admin' && bank_phone && !phoneRegex.test(bank_phone)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Blood bank phone must be exactly 10 digits.',
+      data: null,
+    });
+  }
+
   let conn;
   try {
     conn = await db.getConnection();

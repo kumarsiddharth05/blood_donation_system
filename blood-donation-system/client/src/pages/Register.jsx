@@ -69,15 +69,24 @@ const Register = () => {
       if (!form.blood_group || !form.dob || !form.phone || !form.address) {
         return 'All donor profile fields are required.';
       }
+      if (!/^\d{10}$/.test(form.phone)) {
+        return 'Phone number must be exactly 10 digits.';
+      }
     }
     if (form.role === 'recipient') {
       if (!form.phone || !form.address) {
         return 'Phone and address are required for hospital accounts.';
       }
+      if (!/^\d{10}$/.test(form.phone)) {
+        return 'Phone number must be exactly 10 digits.';
+      }
     }
     if (form.role === 'admin') {
       if (!form.bank_name || !form.bank_location || !form.bank_phone) {
         return 'Blood bank name, location, and phone are required for admin accounts.';
+      }
+      if (!/^\d{10}$/.test(form.bank_phone)) {
+        return 'Blood bank phone must be exactly 10 digits.';
       }
     }
     return null;
@@ -271,6 +280,9 @@ const Register = () => {
                     onChange={handleChange}
                     placeholder="10-digit mobile number"
                     className="form-input"
+                    pattern="\d{10}"
+                    maxLength={10}
+                    minLength={10}
                   />
                 </div>
 
@@ -307,8 +319,11 @@ const Register = () => {
                     name="phone"
                     value={form.phone}
                     onChange={handleChange}
-                    placeholder="Hospital contact number"
+                    placeholder="10-digit contact number"
                     className="form-input"
+                    pattern="\d{10}"
+                    maxLength={10}
+                    minLength={10}
                   />
                 </div>
 
@@ -373,6 +388,9 @@ const Register = () => {
                       onChange={handleChange}
                       placeholder="10-digit contact number"
                       className="form-input"
+                      pattern="\d{10}"
+                      maxLength={10}
+                      minLength={10}
                     />
                   </div>
                 </div>

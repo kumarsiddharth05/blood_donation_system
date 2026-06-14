@@ -85,6 +85,10 @@ const RecipientDashboard = () => {
       setProfileError('Phone and address are required.');
       return;
     }
+    if (!/^\d{10}$/.test(profileForm.phone)) {
+      setProfileError('Phone number must be exactly 10 digits.');
+      return;
+    }
     setProfileLoading(true);
     setProfileError('');
     setProfileSuccess('');
@@ -312,8 +316,11 @@ const RecipientDashboard = () => {
                   name="phone"
                   value={profileForm.phone}
                   onChange={handleProfileChange}
-                  placeholder="Hospital contact number"
+                  placeholder="10-digit contact number"
                   className="form-input"
+                  pattern="\d{10}"
+                  maxLength={10}
+                  minLength={10}
                 />
               </div>
 
