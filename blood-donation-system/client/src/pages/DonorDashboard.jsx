@@ -240,28 +240,50 @@ const DonorDashboard = ({ activeTab = 'overview', onTabChange }) => {
             {history.length === 0 ? (
               <p className="text-gray-500 text-sm">No donations yet. Register your first donation above!</p>
             ) : (
-              <div className="table-container">
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Bank</th>
-                      <th>Units</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {history.slice(0, 3).map((d) => (
-                      <tr key={d.donation_id}>
-                        <td>{formatDate(d.donation_date)}</td>
-                        <td>{d.bank_name}</td>
-                        <td>{d.units_donated}</td>
-                        <td><StatusBadge status={d.status} /></td>
+              <>
+                {/* Mobile View: Stacked cards */}
+                <div className="space-y-3 sm:hidden animate-slide-up">
+                  {history.slice(0, 3).map((d) => (
+                    <div key={d.donation_id} className="bg-gray-800/60 border border-gray-700 rounded-xl p-4 flex flex-col gap-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-semibold text-white text-sm">{d.bank_name}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">📅 {formatDate(d.donation_date)}</p>
+                        </div>
+                        <StatusBadge status={d.status} />
+                      </div>
+                      <div className="border-t border-gray-800/60 pt-2 text-xs text-gray-400 flex justify-between items-center">
+                        <span>Units Donated</span>
+                        <span className="font-bold text-white">{d.units_donated}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop View: Table */}
+                <div className="hidden sm:block table-container">
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Bank</th>
+                        <th>Units</th>
+                        <th>Status</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {history.slice(0, 3).map((d) => (
+                        <tr key={d.donation_id}>
+                          <td>{formatDate(d.donation_date)}</td>
+                          <td>{d.bank_name}</td>
+                          <td>{d.units_donated}</td>
+                          <td><StatusBadge status={d.status} /></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -274,32 +296,55 @@ const DonorDashboard = ({ activeTab = 'overview', onTabChange }) => {
           {history.length === 0 ? (
             <p className="text-gray-500 text-sm">No donation history found.</p>
           ) : (
-            <div className="table-container">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Date</th>
-                    <th>Bank</th>
-                    <th>Location</th>
-                    <th>Units</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {history.map((d, i) => (
-                    <tr key={d.donation_id}>
-                      <td className="text-gray-600">{i + 1}</td>
-                      <td>{formatDate(d.donation_date)}</td>
-                      <td>{d.bank_name}</td>
-                      <td className="text-gray-500">{d.bank_location}</td>
-                      <td>{d.units_donated}</td>
-                      <td><StatusBadge status={d.status} /></td>
+            <>
+              {/* Mobile View: Stacked cards */}
+              <div className="space-y-3 sm:hidden animate-slide-up">
+                {history.map((d, i) => (
+                  <div key={d.donation_id} className="bg-gray-800/60 border border-gray-700 rounded-xl p-4 flex flex-col gap-2">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <span className="text-xs text-gray-500 font-mono">#{i + 1}</span>
+                        <p className="font-semibold text-white text-sm mt-0.5">{d.bank_name}</p>
+                        <p className="text-xs text-gray-500">📍 {d.bank_location || '—'}</p>
+                      </div>
+                      <StatusBadge status={d.status} />
+                    </div>
+                    <div className="border-t border-gray-800/60 pt-2 text-xs text-gray-400 flex justify-between items-center">
+                      <span>📅 {formatDate(d.donation_date)}</span>
+                      <span>Units: <strong className="text-white">{d.units_donated}</strong></span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop View: Table */}
+              <div className="hidden sm:block table-container">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Date</th>
+                      <th>Bank</th>
+                      <th>Location</th>
+                      <th>Units</th>
+                      <th>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {history.map((d, i) => (
+                      <tr key={d.donation_id}>
+                        <td className="text-gray-600">{i + 1}</td>
+                        <td>{formatDate(d.donation_date)}</td>
+                        <td>{d.bank_name}</td>
+                        <td className="text-gray-500">{d.bank_location}</td>
+                        <td>{d.units_donated}</td>
+                        <td><StatusBadge status={d.status} /></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       )}

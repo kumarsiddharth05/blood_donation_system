@@ -260,12 +260,12 @@ const RecipientDashboard = ({ activeTab = 'requests', onTabChange }) => {
                 { label: 'Phone', value: profile.phone },
                 { label: 'Address', value: profile.address },
               ].map(({ label, value, badge }) => (
-                <div key={label} className="flex gap-4 py-2 border-b border-gray-800">
-                  <p className="text-gray-500 text-sm w-44 shrink-0">{label}</p>
+                <div key={label} className="flex flex-col sm:flex-row sm:items-center py-2 border-b border-gray-800 gap-1 sm:gap-4">
+                  <p className="text-gray-500 text-xs sm:text-sm sm:w-44 shrink-0">{label}</p>
                   {badge ? (
                     <span className="blood-group-badge">{value}</span>
                   ) : (
-                    <p className="text-white text-sm">{value}</p>
+                    <p className="text-white text-sm break-all font-medium">{value}</p>
                   )}
                 </div>
               ))}
@@ -498,34 +498,58 @@ const RecipientDashboard = ({ activeTab = 'requests', onTabChange }) => {
                   {matches.length === 0 ? (
                     <p className="text-gray-500">No compatible blood available right now. Please try again later.</p>
                   ) : (
-                    <div className="table-container">
-                      <table className="data-table">
-                        <thead>
-                          <tr>
-                            <th>Bank Name</th>
-                            <th>Location</th>
-                            <th>Phone</th>
-                            <th>Available Blood</th>
-                            <th>Units</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {matches.map((m, i) => (
-                            <tr key={i}>
-                              <td className="font-medium text-white">{m.bank_name}</td>
-                              <td>{m.location}</td>
-                              <td>{m.bank_phone}</td>
-                              <td><span className="blood-group-badge">{m.available_blood_group}</span></td>
-                              <td>
-                                <span className={`font-bold ${m.units_available < 5 ? 'text-red-400' : 'text-emerald-400'}`}>
-                                  {m.units_available}
-                                </span>
-                              </td>
+                    <>
+                      {/* Mobile View: Stacked cards */}
+                      <div className="grid grid-cols-1 gap-3 sm:hidden">
+                        {matches.map((m, i) => (
+                          <div key={i} className="bg-gray-800/60 border border-gray-700 rounded-xl p-4 flex flex-col gap-3">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h4 className="font-semibold text-white text-sm">{m.bank_name}</h4>
+                                <p className="text-xs text-gray-500 mt-0.5">📍 {m.location}</p>
+                              </div>
+                              <span className="blood-group-badge">{m.available_blood_group}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-xs border-t border-gray-800/60 pt-2.5 mt-1">
+                              <span className="text-gray-400">📞 {m.bank_phone}</span>
+                              <span className="text-gray-400">
+                                Units: <span className={`font-bold ${m.units_available < 5 ? 'text-red-400' : 'text-emerald-400'}`}>{m.units_available}</span>
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Desktop View: Table */}
+                      <div className="hidden sm:block table-container">
+                        <table className="data-table">
+                          <thead>
+                            <tr>
+                              <th>Bank Name</th>
+                              <th>Location</th>
+                              <th>Phone</th>
+                              <th>Available Blood</th>
+                              <th>Units</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                          </thead>
+                          <tbody>
+                            {matches.map((m, i) => (
+                              <tr key={i}>
+                                <td className="font-medium text-white">{m.bank_name}</td>
+                                <td>{m.location}</td>
+                                <td>{m.bank_phone}</td>
+                                <td><span className="blood-group-badge">{m.available_blood_group}</span></td>
+                                <td>
+                                  <span className={`font-bold ${m.units_available < 5 ? 'text-red-400' : 'text-emerald-400'}`}>
+                                    {m.units_available}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
                   )}
                 </div>
               )}

@@ -54,11 +54,11 @@ const DonorCard = ({ donor, showActions = false, onToggleEligibility }) => {
           <span>🎂</span>
           <span>{formatDate(donor.dob)}</span>
         </div>
-        <div className="flex items-center gap-1.5 col-span-2">
-          <span>📍</span>
-          <span className="truncate">{donor.address}</span>
+        <div className="flex items-start gap-1.5 col-span-2">
+          <span className="mt-0.5">📍</span>
+          <span className="break-words">{donor.address}</span>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 col-span-2 mt-0.5">
           <span>💉</span>
           <span>Last donated: {formatDate(donor.last_donation_date)}</span>
         </div>

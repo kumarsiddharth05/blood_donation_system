@@ -95,7 +95,7 @@
   }
 
   .stat-card {
-    @apply card flex flex-col gap-1 hover:border-blood-700/50 transition-colors duration-300;
+    @apply card flex flex-col gap-1 hover:border-blood-700/50 transition-colors duration-300 p-3 sm:p-5;
   }
 
   /* ── Buttons — all have 44px min touch target ────────────────────── */

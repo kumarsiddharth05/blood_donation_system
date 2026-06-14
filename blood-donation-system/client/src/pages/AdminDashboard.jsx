@@ -172,7 +172,7 @@ const AdminDashboard = ({ activeTab = 'overview', onTabChange }) => {
       {/* Inventory Edit Modal */}
       {editRow && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="card w-full max-w-sm animate-slide-up border-gray-700">
+          <div className="card w-[calc(100%-32px)] max-w-sm animate-slide-up border-gray-700">
             <h3 className="text-lg font-semibold text-white mb-4">
               Edit Inventory — <span className="text-blood-400">{editRow.blood_group}</span>
             </h3>
@@ -251,45 +251,80 @@ const AdminDashboard = ({ activeTab = 'overview', onTabChange }) => {
           {/* Recent donations */}
           <div className="card">
             <h2 className="section-title">Recent Donations</h2>
-            <div className="table-container">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Donor</th>
-                    <th>Blood</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {donations.slice(0, 6).map((d) => (
-                    <tr key={d.donation_id}>
-                      <td className="font-medium text-white">{d.donor_name}</td>
-                      <td><span className="blood-group-badge">{d.blood_group}</span></td>
-                      <td>{formatDate(d.donation_date)}</td>
-                      <td><StatusBadge status={d.status} /></td>
-                      <td>
-                        {d.status === 'pending' && (
-                          <div className="flex gap-1">
-                            <button
-                              id={`complete-don-${d.donation_id}`}
-                              onClick={() => handleDonationStatus(d.donation_id, 'completed')}
-                              className="text-xs btn-success py-1 px-2"
-                            >Done</button>
-                            <button
-                              id={`reject-don-${d.donation_id}`}
-                              onClick={() => handleDonationStatus(d.donation_id, 'rejected')}
-                              className="text-xs btn-danger py-1 px-2"
-                            >Reject</button>
-                          </div>
-                        )}
-                      </td>
+            <>
+              {/* Mobile View: Stacked cards */}
+              <div className="space-y-3 sm:hidden">
+                {donations.slice(0, 6).map((d) => (
+                  <div key={d.donation_id} className="bg-gray-800/60 border border-gray-700 rounded-xl p-4 flex flex-col gap-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-semibold text-white text-sm">{d.donor_name}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">📅 {formatDate(d.donation_date)}</p>
+                      </div>
+                      <div className="flex flex-col items-end gap-1.5">
+                        <span className="blood-group-badge">{d.blood_group}</span>
+                        <StatusBadge status={d.status} />
+                      </div>
+                    </div>
+                    {d.status === 'pending' && (
+                      <div className="flex gap-2 border-t border-gray-800/60 pt-2.5 mt-1">
+                        <button
+                          id={`complete-don-mob-${d.donation_id}`}
+                          onClick={() => handleDonationStatus(d.donation_id, 'completed')}
+                          className="btn-success flex-1 py-1.5 px-2 text-xs font-semibold"
+                        >✓ Done</button>
+                        <button
+                          id={`reject-don-mob-${d.donation_id}`}
+                          onClick={() => handleDonationStatus(d.donation_id, 'rejected')}
+                          className="btn-danger flex-1 py-1.5 px-2 text-xs font-semibold"
+                        >✕ Reject</button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop View: Table */}
+              <div className="hidden sm:block table-container">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Donor</th>
+                      <th>Blood</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {donations.slice(0, 6).map((d) => (
+                      <tr key={d.donation_id}>
+                        <td className="font-medium text-white">{d.donor_name}</td>
+                        <td><span className="blood-group-badge">{d.blood_group}</span></td>
+                        <td>{formatDate(d.donation_date)}</td>
+                        <td><StatusBadge status={d.status} /></td>
+                        <td>
+                          {d.status === 'pending' && (
+                            <div className="flex gap-1">
+                              <button
+                                id={`complete-don-${d.donation_id}`}
+                                onClick={() => handleDonationStatus(d.donation_id, 'completed')}
+                                className="text-xs btn-success py-1 px-2"
+                              >Done</button>
+                              <button
+                                id={`reject-don-${d.donation_id}`}
+                                onClick={() => handleDonationStatus(d.donation_id, 'rejected')}
+                                className="text-xs btn-danger py-1 px-2"
+                              >Reject</button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
             {donations.length === 0 && <p className="text-gray-500 text-sm mt-2">No donations found.</p>}
           </div>
         </div>
@@ -354,64 +389,116 @@ const AdminDashboard = ({ activeTab = 'overview', onTabChange }) => {
           {donations.length === 0 ? (
             <p className="text-gray-500 text-sm">No donations found.</p>
           ) : (
-            <div className="table-container">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Donor</th>
-                    <th>Blood Group</th>
-                    <th>Bank</th>
-                    <th>Date</th>
-                    <th>Units</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {donations.map((d, i) => (
-                    <tr key={d.donation_id}>
-                      <td className="text-gray-600">{i + 1}</td>
-                      <td>
+            <>
+              {/* Mobile View: Stacked Cards */}
+              <div className="space-y-4 sm:hidden">
+                {donations.map((d, i) => (
+                  <div key={d.donation_id} className="bg-gray-800/60 border border-gray-700 rounded-xl p-4 flex flex-col gap-3">
+                    <div className="flex justify-between items-start gap-2">
+                      <div>
+                        <span className="text-xs text-gray-500 font-mono">#{i + 1}</span>
+                        <p className="font-semibold text-white text-sm mt-0.5">{d.donor_name}</p>
+                        <p className="text-xs text-gray-400 break-all">{d.donor_email}</p>
+                      </div>
+                      <span className="blood-group-badge">{d.blood_group}</span>
+                    </div>
+
+                    <div className="border-t border-gray-800 pt-2.5 space-y-1.5 text-xs text-gray-400">
+                      <div className="flex items-start gap-1">
+                        <span className="mt-0.5">🏦</span>
                         <div>
-                          <p className="text-white font-medium">{d.donor_name}</p>
-                          <p className="text-gray-600 text-xs">{d.donor_email}</p>
+                          <p className="text-gray-300 font-medium">{d.bank_name}</p>
+                          <p className="text-gray-500 text-[11px]">{d.bank_location}</p>
                         </div>
-                      </td>
-                      <td><span className="blood-group-badge">{d.blood_group}</span></td>
-                      <td>
-                        <div>
-                          <p>{d.bank_name}</p>
-                          <p className="text-gray-600 text-xs">{d.bank_location}</p>
-                        </div>
-                      </td>
-                      <td>{formatDate(d.donation_date)}</td>
-                      <td>{d.units_donated}</td>
-                      <td><StatusBadge status={d.status} /></td>
-                      <td>
-                        {d.status === 'pending' && (
-                          <div className="flex gap-1">
-                            <button
-                              id={`complete-don-full-${d.donation_id}`}
-                              onClick={() => handleDonationStatus(d.donation_id, 'completed')}
-                              className="text-xs btn-success py-1 px-2"
-                            >Complete</button>
-                            <button
-                              id={`reject-don-full-${d.donation_id}`}
-                              onClick={() => handleDonationStatus(d.donation_id, 'rejected')}
-                              className="text-xs btn-danger py-1 px-2"
-                            >Reject</button>
-                          </div>
-                        )}
-                        {d.status !== 'pending' && (
-                          <span className="text-gray-600 text-xs">—</span>
-                        )}
-                      </td>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>📅 {formatDate(d.donation_date)}</span>
+                        <span>Units: <strong className="text-white">{d.units_donated}</strong></span>
+                      </div>
+                      <div className="flex justify-between items-center pt-1">
+                        <span className="text-gray-500">Status:</span>
+                        <StatusBadge status={d.status} />
+                      </div>
+                    </div>
+
+                    {d.status === 'pending' && (
+                      <div className="flex gap-2 border-t border-gray-800 pt-2.5">
+                        <button
+                          id={`complete-don-full-mob-${d.donation_id}`}
+                          onClick={() => handleDonationStatus(d.donation_id, 'completed')}
+                          className="btn-success flex-1 py-1.5 text-xs font-semibold"
+                        >Complete</button>
+                        <button
+                          id={`reject-don-full-mob-${d.donation_id}`}
+                          onClick={() => handleDonationStatus(d.donation_id, 'rejected')}
+                          className="btn-danger flex-1 py-1.5 text-xs font-semibold"
+                        >Reject</button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop View: Table */}
+              <div className="hidden sm:block table-container">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Donor</th>
+                      <th>Blood Group</th>
+                      <th>Bank</th>
+                      <th>Date</th>
+                      <th>Units</th>
+                      <th>Status</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {donations.map((d, i) => (
+                      <tr key={d.donation_id}>
+                        <td className="text-gray-600">{i + 1}</td>
+                        <td>
+                          <div>
+                            <p className="text-white font-medium">{d.donor_name}</p>
+                            <p className="text-gray-600 text-xs">{d.donor_email}</p>
+                          </div>
+                        </td>
+                        <td><span className="blood-group-badge">{d.blood_group}</span></td>
+                        <td>
+                          <div>
+                            <p>{d.bank_name}</p>
+                            <p className="text-gray-600 text-xs">{d.bank_location}</p>
+                          </div>
+                        </td>
+                        <td>{formatDate(d.donation_date)}</td>
+                        <td>{d.units_donated}</td>
+                        <td><StatusBadge status={d.status} /></td>
+                        <td>
+                          {d.status === 'pending' && (
+                            <div className="flex gap-1">
+                              <button
+                                id={`complete-don-full-${d.donation_id}`}
+                                onClick={() => handleDonationStatus(d.donation_id, 'completed')}
+                                className="text-xs btn-success py-1 px-2"
+                              >Complete</button>
+                              <button
+                                id={`reject-don-full-${d.donation_id}`}
+                                onClick={() => handleDonationStatus(d.donation_id, 'rejected')}
+                                className="text-xs btn-danger py-1 px-2"
+                              >Reject</button>
+                            </div>
+                          )}
+                          {d.status !== 'pending' && (
+                            <span className="text-gray-600 text-xs">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       )}

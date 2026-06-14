@@ -71,7 +71,7 @@ const RequestCard = ({
                 {request.recipient_address && (
                   <div className="text-gray-400 flex items-start gap-1.5 pl-5">
                     <span className="mt-0.5">📍</span>
-                    <span className="break-all">{request.recipient_address}</span>
+                    <span className="break-words">{request.recipient_address}</span>
                   </div>
                 )}
               </div>
