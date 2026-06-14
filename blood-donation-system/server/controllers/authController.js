@@ -11,8 +11,8 @@ const register = async (req, res) => {
     name, email, password, role,
     // Donor-specific fields
     blood_group, dob, phone, address,
-    // Recipient-specific fields
-    blood_group_needed, medical_condition,
+    // Admin / Blood Bank fields
+    bank_name, bank_location, bank_phone,
   } = req.body;
 
   // Validate required fields
@@ -88,8 +88,33 @@ const register = async (req, res) => {
         'INSERT INTO recipients (user_id, phone, address) VALUES (?, ?, ?)',
         [userId, phone, address]
       );
+    } else if (role === 'admin') {
+      // Admin must provide blood bank details
+      if (!bank_name || !bank_location || !bank_phone) {
+        await conn.rollback();
+        return res.status(400).json({
+          success: false,
+          message: 'Admin registration requires bank_name, bank_location, and bank_phone.',
+          data: null,
+        });
+      }
+
+      // Create the new blood bank
+      const [bankResult] = await conn.query(
+        'INSERT INTO blood_banks (name, location, phone) VALUES (?, ?, ?)',
+        [bank_name, bank_location, bank_phone]
+      );
+      const bankId = bankResult.insertId;
+
+      // Seed all 8 blood groups in inventory for this bank (starting at 0 units)
+      const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+      for (const bg of bloodGroups) {
+        await conn.query(
+          'INSERT INTO blood_inventory (bank_id, blood_group, units_available) VALUES (?, ?, 0)',
+          [bankId, bg]
+        );
+      }
     }
-    // admin role: no extra profile table
 
     await conn.commit();
 

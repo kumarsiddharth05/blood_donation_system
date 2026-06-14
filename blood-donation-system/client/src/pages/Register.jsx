@@ -37,6 +37,10 @@ const Register = () => {
       dob: '',
       phone: '',
       address: '',
+      // Admin / Blood Bank fields
+      bank_name: '',
+      bank_location: '',
+      bank_phone: '',
     };
   });
 
@@ -69,6 +73,11 @@ const Register = () => {
     if (form.role === 'recipient') {
       if (!form.phone || !form.address) {
         return 'Phone and address are required for hospital accounts.';
+      }
+    }
+    if (form.role === 'admin') {
+      if (!form.bank_name || !form.bank_location || !form.bank_phone) {
+        return 'Blood bank name, location, and phone are required for admin accounts.';
       }
     }
     return null;
@@ -324,8 +333,48 @@ const Register = () => {
                 <div className="flex items-start gap-2 mb-2">
                   <span className="text-purple-400 text-lg">🛡️</span>
                   <p className="text-purple-300 text-sm">
-                    <strong>Admin account</strong> — you will have full access to manage inventory, approve/reject requests, and manage donors. Note: In a production app, admin registration should be restricted.
+                    <strong>Admin account</strong> — a new blood bank will be created under your name. You will manage its inventory, donations, and requests.
                   </p>
+                </div>
+
+                <div>
+                  <label htmlFor="reg-bank-name" className="form-label">Blood Bank Name</label>
+                  <input
+                    id="reg-bank-name"
+                    type="text"
+                    name="bank_name"
+                    value={form.bank_name}
+                    onChange={handleChange}
+                    placeholder="e.g. City Blood Bank, BIET Blood Centre"
+                    className="form-input"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="reg-bank-location" className="form-label">Location / City</label>
+                    <input
+                      id="reg-bank-location"
+                      type="text"
+                      name="bank_location"
+                      value={form.bank_location}
+                      onChange={handleChange}
+                      placeholder="e.g. Davanagere, Karnataka"
+                      className="form-input"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="reg-bank-phone" className="form-label">Blood Bank Phone</label>
+                    <input
+                      id="reg-bank-phone"
+                      type="tel"
+                      name="bank_phone"
+                      value={form.bank_phone}
+                      onChange={handleChange}
+                      placeholder="10-digit contact number"
+                      className="form-input"
+                    />
+                  </div>
                 </div>
               </div>
             )}

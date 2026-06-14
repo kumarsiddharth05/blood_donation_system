@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 import InventoryTable from '../components/InventoryTable';
 import RequestCard from '../components/RequestCard';
 import DonorCard from '../components/DonorCard';
@@ -32,6 +33,7 @@ const SummaryCard = ({ label, value, color, icon }) => (
 const TABS = ['overview', 'inventory', 'requests', 'donors', 'donations'];
 
 const AdminDashboard = () => {
+  const { user } = useAuth();
   const [summary,   setSummary]   = useState(null);
   const [inventory, setInventory] = useState([]);
   const [requests,  setRequests]  = useState([]);
@@ -209,7 +211,9 @@ const AdminDashboard = () => {
         <h1 className="text-3xl font-bold text-white">
           Admin <span className="text-purple-400">Control Panel</span>
         </h1>
-        <p className="text-gray-500 mt-1">Manage blood inventory, requests, donations, and donors.</p>
+        <p className="text-gray-500 mt-1">
+          Logged in as <span className="text-purple-300 font-medium">{user?.name}</span> · Manage blood inventory, requests, donations, and donors.
+        </p>
       </div>
 
       {/* Summary cards */}
