@@ -40,7 +40,7 @@ const Register = () => {
   // Pre-select role from ?role= query param (set by home page buttons)
   useEffect(() => {
     const roleParam = searchParams.get('role');
-    if (roleParam === 'donor' || roleParam === 'recipient') {
+    if (ROLES.includes(roleParam)) {
       setForm((prev) => ({ ...prev, role: roleParam }));
     }
   }, [searchParams]);
@@ -135,7 +135,9 @@ const Register = () => {
             {/* Basic fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="reg-name" className="form-label">Full Name</label>
+                <label htmlFor="reg-name" className="form-label">
+                  {form.role === 'recipient' ? 'Hospital / Blood Bank Name' : form.role === 'admin' ? 'Admin / Blood Bank Name' : 'Full Name'}
+                </label>
                 <input
                   id="reg-name"
                   type="text"

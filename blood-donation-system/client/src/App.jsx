@@ -35,12 +35,15 @@ const Home = () => (
       Connecting donors, recipients, and blood banks — powered by real-time inventory tracking, smart compatibility matching, and role-based dashboards.
     </p>
 
-    <div className="flex flex-col sm:flex-row gap-4 animate-fade-in">
+    <div className="flex flex-col sm:flex-row gap-4 animate-fade-in flex-wrap justify-center">
       <Link to="/register?role=donor" id="home-donor-btn" className="btn-primary text-base px-6 py-2.5">
         🩸 Become a Donor
       </Link>
       <Link to="/register?role=recipient" id="home-recipient-btn" className="btn-secondary text-base px-6 py-2.5 border-blue-700 text-blue-300 hover:bg-blue-900/40">
         💉 Become a Recipient
+      </Link>
+      <Link to="/register?role=admin" id="home-admin-btn" className="btn-secondary text-base px-6 py-2.5 border-purple-700 text-purple-300 hover:bg-purple-900/40">
+        🛡️ Become an Admin
       </Link>
     </div>
 
