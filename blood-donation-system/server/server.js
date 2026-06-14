@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
+const fs      = require('fs');
 
 const authRoutes      = require('./routes/auth');
 const donorRoutes     = require('./routes/donor');
@@ -58,12 +59,23 @@ app.use('/api', (req, res) => {
 
 // ─── Serve React Build (Production single-URL deployment) ─────────────────────
 const distPath = path.join(__dirname, '../client/dist');
-app.use(express.static(distPath));
+const indexHtml = path.join(distPath, 'index.html');
+
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  console.log('✅ Serving React build from:', distPath);
+} else {
+  console.warn('⚠️  client/dist not found — frontend will not be served. Run npm run build.');
+}
 
 // SPA catch-all: any non-API route returns index.html so React Router works
 // on page refresh (e.g. /login, /donor, /admin all load the React app).
 app.get('*', (req, res) => {
-  res.sendFile(path.join(distPath, 'index.html'));
+  if (fs.existsSync(indexHtml)) {
+    res.sendFile(indexHtml);
+  } else {
+    res.status(503).send('<h2>Frontend not built yet. Run <code>npm run build</code>.</h2>');
+  }
 });
 
 // ─── Global Error Handler ─────────────────────────────────────────────────────

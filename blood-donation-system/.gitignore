@@ -7,8 +7,8 @@ server/node_modules/
 server/.env
 .env
 
-# Build output
-client/dist/
+# Build output - dist IS committed so Render can serve it without building
+# client/dist/
 
 # Logs
 *.log
