@@ -131,12 +131,20 @@ const updateRequestStatus = async (req, res) => {
         });
       }
 
-      await conn.query(
+      const [updateResult] = await conn.query(
         `UPDATE blood_inventory
          SET units_available = units_available - ?
-         WHERE bank_id = ? AND blood_group = ?`,
-        [currentRequest.units_needed, currentRequest.bank_id, currentRequest.blood_group]
+         WHERE bank_id = ? AND blood_group = ? AND units_available >= ?`,
+        [currentRequest.units_needed, currentRequest.bank_id, currentRequest.blood_group, currentRequest.units_needed]
       );
+      if (updateResult.affectedRows === 0) {
+        await conn.rollback();
+        return res.status(400).json({
+          success: false,
+          message: 'Insufficient inventory. Could not approve request.',
+          data: null,
+        });
+      }
     }
 
     await conn.commit();

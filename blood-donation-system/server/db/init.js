@@ -102,7 +102,8 @@ async function run() {
         blood_group     ENUM('A+','A-','B+','B-','AB+','AB-','O+','O-') NOT NULL,
         units_available INT DEFAULT 0,
         last_updated    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (bank_id) REFERENCES blood_banks(bank_id) ON DELETE CASCADE
+        FOREIGN KEY (bank_id) REFERENCES blood_banks(bank_id) ON DELETE CASCADE,
+        CHECK (units_available >= 0)
       )
     `);
 
