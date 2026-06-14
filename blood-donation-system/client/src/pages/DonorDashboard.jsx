@@ -220,7 +220,7 @@ const DonorDashboard = () => {
                       value={donateForm.donation_date}
                       onChange={handleDonateChange}
                       className="form-input"
-                      max={new Date().toISOString().split('T')[0]}
+                      min={new Date().toISOString().split('T')[0]}
                     />
                   </div>
 
