@@ -21,10 +21,10 @@ const StatusBadge = ({ status }) => {
 };
 
 const SummaryCard = ({ label, value, color, icon }) => (
-  <div className="stat-card group cursor-default">
-    <div className="flex items-center justify-between">
-      <p className="text-xs sm:text-sm text-gray-500 font-medium">{label}</p>
-      <span className="text-xl sm:text-2xl">{icon}</span>
+  <div className="stat-card group cursor-default justify-between">
+    <div className="flex items-start justify-between gap-1">
+      <p className="text-xs sm:text-sm text-gray-500 font-medium min-h-[32px] sm:min-h-0">{label}</p>
+      <span className="text-xl sm:text-2xl shrink-0 mt-0.5">{icon}</span>
     </div>
     <p className={`text-2xl sm:text-4xl font-bold mt-1 sm:mt-2 ${color}`}>{value ?? '—'}</p>
   </div>

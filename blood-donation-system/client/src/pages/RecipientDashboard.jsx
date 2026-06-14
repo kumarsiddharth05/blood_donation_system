@@ -208,15 +208,15 @@ const RecipientDashboard = ({ activeTab = 'requests', onTabChange }) => {
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <div className="stat-card">
-          <p className="text-xs sm:text-sm text-gray-500 font-medium">Total Requests</p>
+          <p className="text-xs sm:text-sm text-gray-500 font-medium min-h-[32px] sm:min-h-0">Total Requests</p>
           <p className="text-2xl sm:text-3xl font-bold text-white mt-1">{requests.length}</p>
         </div>
         <div className="stat-card">
-          <p className="text-xs sm:text-sm text-gray-500 font-medium">Pending</p>
+          <p className="text-xs sm:text-sm text-gray-500 font-medium min-h-[32px] sm:min-h-0">Pending</p>
           <p className="text-2xl sm:text-3xl font-bold text-amber-400 mt-1">{pendingCount}</p>
         </div>
         <div className="stat-card">
-          <p className="text-xs sm:text-sm text-gray-500 font-medium">Approved</p>
+          <p className="text-xs sm:text-sm text-gray-500 font-medium min-h-[32px] sm:min-h-0">Approved</p>
           <p className="text-2xl sm:text-3xl font-bold text-emerald-400 mt-1">{approvedCount}</p>
         </div>
       </div>
