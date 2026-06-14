@@ -116,6 +116,21 @@ const updateRequestStatus = async (req, res) => {
 
     // Replicate database trigger behavior: decrement blood inventory if approved
     if (status === 'approved' && currentRequest.status !== 'approved') {
+      // Check if enough inventory exists before approving
+      const [invRows] = await conn.query(
+        'SELECT units_available FROM blood_inventory WHERE bank_id = ? AND blood_group = ? FOR UPDATE',
+        [currentRequest.bank_id, currentRequest.blood_group]
+      );
+      const available = invRows.length > 0 ? invRows[0].units_available : 0;
+      if (available < currentRequest.units_needed) {
+        await conn.rollback();
+        return res.status(400).json({
+          success: false,
+          message: `Insufficient inventory. Only ${available} unit(s) of ${currentRequest.blood_group} available, but ${currentRequest.units_needed} needed.`,
+          data: null,
+        });
+      }
+
       await conn.query(
         `UPDATE blood_inventory
          SET units_available = units_available - ?
