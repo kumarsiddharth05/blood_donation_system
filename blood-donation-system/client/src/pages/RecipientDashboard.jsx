@@ -195,11 +195,6 @@ const RecipientDashboard = ({ activeTab = 'requests', onTabChange }) => {
         </h1>
         <p className="text-gray-500 mt-1 text-sm sm:text-base">
           Recipient Dashboard
-          {profile?.blood_group_needed && (
-            <span className="ml-2 px-2 py-0.5 bg-blood-900/40 border border-blood-800/50 rounded-lg text-blood-300 text-xs font-semibold">
-              Needs: {profile.blood_group_needed}
-            </span>
-          )}
         </p>
       </div>
 
@@ -359,12 +354,14 @@ const RecipientDashboard = ({ activeTab = 'requests', onTabChange }) => {
           {isProfileComplete && (
             <>
               <div className="card">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="section-title">Request Blood</h2>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                  <h2 className="text-base sm:text-lg font-semibold text-gray-200 flex items-center gap-2">
+                    Request Blood
+                  </h2>
                   <button
                     id="show-request-form-btn"
                     onClick={() => setShowReqForm(!showReqForm)}
-                    className="btn-primary text-sm"
+                    className="btn-primary text-sm w-full sm:w-auto"
                   >
                     {showReqForm ? 'Cancel' : '+ New Request'}
                   </button>

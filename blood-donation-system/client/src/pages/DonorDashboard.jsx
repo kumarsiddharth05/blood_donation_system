@@ -156,12 +156,14 @@ const DonorDashboard = ({ activeTab = 'overview', onTabChange }) => {
       {activeTab === 'overview' && (
         <div className="space-y-6">
           <div className="card">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="section-title">Register a Donation</h2>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-200 flex items-center gap-2">
+                Register a Donation
+              </h2>
               <button
                 id="show-donate-form-btn"
                 onClick={() => setShowDonateForm(!showDonateForm)}
-                className="btn-primary text-sm"
+                className="btn-primary text-sm w-full sm:w-auto"
                 disabled={profile && !profile.is_eligible}
               >
                 {showDonateForm ? 'Cancel' : '+ Register Donation'}
