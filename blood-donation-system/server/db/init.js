@@ -18,6 +18,9 @@ const DB_CONFIG = {
   host:     process.env.DB_HOST || 'localhost',
   user:     process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
+  port:     Number(process.env.DB_PORT) || 3306,
+  // SSL required for cloud databases (Aiven, etc.)
+  ...(process.env.DB_SSL === 'true' && { ssl: { rejectUnauthorized: false } }),
 };
 
 async function run() {

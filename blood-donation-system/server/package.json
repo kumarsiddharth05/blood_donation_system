@@ -4,9 +4,10 @@
   "description": "Blood Donation Management System - Express Backend",
   "main": "server.js",
   "scripts": {
-    "init": "node db/init.js",
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "init":    "node db/init.js",
+    "start":   "node server.js",
+    "dev":     "nodemon server.js",
+    "build":   "cd ../client && npm install && npm run build"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

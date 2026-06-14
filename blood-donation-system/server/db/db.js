@@ -11,6 +11,8 @@ const pool = mysql.createPool({
   connectionLimit:    10,
   queueLimit:         0,
   connectTimeout:     10000, // 10 seconds — fail fast with a clear error
+  // SSL required for cloud databases (Aiven, PlanetScale, etc.)
+  ...(process.env.DB_SSL === 'true' && { ssl: { rejectUnauthorized: false } }),
 });
 
 // Test the connection on startup
