@@ -190,11 +190,11 @@ const RecipientDashboard = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
       {/* Page header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white">
           Welcome, <span className="text-blue-400">{user?.name}</span> 👋
         </h1>
-        <p className="text-gray-500 mt-1">
+        <p className="text-gray-500 mt-1 text-sm sm:text-base">
           Recipient Dashboard
           {profile?.blood_group_needed && (
             <span className="ml-2 px-2 py-0.5 bg-blood-900/40 border border-blood-800/50 rounded-lg text-blood-300 text-xs font-semibold">
@@ -212,18 +212,18 @@ const RecipientDashboard = () => {
       )}
 
       {/* Summary cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <div className="stat-card">
-          <p className="text-sm text-gray-500 font-medium">Total Requests</p>
-          <p className="text-3xl font-bold text-white mt-1">{requests.length}</p>
+          <p className="text-xs sm:text-sm text-gray-500 font-medium">Total Requests</p>
+          <p className="text-2xl sm:text-3xl font-bold text-white mt-1">{requests.length}</p>
         </div>
         <div className="stat-card">
-          <p className="text-sm text-gray-500 font-medium">Pending</p>
-          <p className="text-3xl font-bold text-amber-400 mt-1">{pendingCount}</p>
+          <p className="text-xs sm:text-sm text-gray-500 font-medium">Pending</p>
+          <p className="text-2xl sm:text-3xl font-bold text-amber-400 mt-1">{pendingCount}</p>
         </div>
         <div className="stat-card">
-          <p className="text-sm text-gray-500 font-medium">Approved</p>
-          <p className="text-3xl font-bold text-emerald-400 mt-1">{approvedCount}</p>
+          <p className="text-xs sm:text-sm text-gray-500 font-medium">Approved</p>
+          <p className="text-2xl sm:text-3xl font-bold text-emerald-400 mt-1">{approvedCount}</p>
         </div>
       </div>
 
@@ -235,15 +235,15 @@ const RecipientDashboard = () => {
       )}
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-1 bg-gray-900 border border-gray-800 rounded-xl p-1 mb-6 w-fit">
+      <div className="tab-bar">
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+            className={`tab-btn ${
               activeTab === tab.key
-                ? 'bg-blue-700 text-white shadow-lg'
-                : 'text-gray-400 hover:text-white'
+                ? 'tab-btn-active bg-blue-700'
+                : 'tab-btn-inactive'
             }`}
             id={`recipient-tab-${tab.key}`}
           >

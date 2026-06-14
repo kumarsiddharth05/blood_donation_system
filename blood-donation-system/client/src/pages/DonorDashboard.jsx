@@ -115,31 +115,31 @@ const DonorDashboard = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
       {/* Page header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white">
           Welcome, <span className="text-blood-400">{user?.name}</span> 👋
         </h1>
-        <p className="text-gray-500 mt-1">Donor Dashboard — manage your donations and track your impact.</p>
+        <p className="text-gray-500 mt-1 text-sm sm:text-base">Donor Dashboard — manage your donations and track your impact.</p>
       </div>
 
       {/* Eligibility & Summary Cards */}
       {profile && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <div className="stat-card">
-            <p className="text-sm text-gray-500 font-medium">Eligibility Status</p>
-            <div className="mt-2">
+            <p className="text-xs sm:text-sm text-gray-500 font-medium">Eligibility Status</p>
+            <div className="mt-1 sm:mt-2">
               <span className={profile.is_eligible ? 'badge-eligible' : 'badge-ineligible'}>
                 {profile.is_eligible ? '✓ Eligible to Donate' : '✕ Currently Ineligible'}
               </span>
             </div>
           </div>
           <div className="stat-card">
-            <p className="text-sm text-gray-500 font-medium">Blood Group</p>
-            <p className="text-3xl font-bold text-blood-400 mt-1">{profile.blood_group}</p>
+            <p className="text-xs sm:text-sm text-gray-500 font-medium">Blood Group</p>
+            <p className="text-2xl sm:text-3xl font-bold text-blood-400 mt-1">{profile.blood_group}</p>
           </div>
           <div className="stat-card">
-            <p className="text-sm text-gray-500 font-medium">Last Donation</p>
-            <p className="text-lg font-semibold text-white mt-1">{formatDate(profile.last_donation_date)}</p>
+            <p className="text-xs sm:text-sm text-gray-500 font-medium">Last Donation</p>
+            <p className="text-base sm:text-lg font-semibold text-white mt-1">{formatDate(profile.last_donation_date)}</p>
           </div>
         </div>
       )}
@@ -152,15 +152,15 @@ const DonorDashboard = () => {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-900 border border-gray-800 rounded-xl p-1 mb-6 w-fit">
+      <div className="tab-bar">
         {['overview', 'history', 'inventory'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 capitalize ${
+            className={`tab-btn ${
               activeTab === tab
-                ? 'bg-blood-700 text-white shadow-lg'
-                : 'text-gray-400 hover:text-white'
+                ? 'tab-btn-active bg-blood-700'
+                : 'tab-btn-inactive'
             }`}
             id={`donor-tab-${tab}`}
           >

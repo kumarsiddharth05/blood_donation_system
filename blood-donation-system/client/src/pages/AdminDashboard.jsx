@@ -23,10 +23,10 @@ const StatusBadge = ({ status }) => {
 const SummaryCard = ({ label, value, color, icon }) => (
   <div className="stat-card group cursor-default">
     <div className="flex items-center justify-between">
-      <p className="text-sm text-gray-500 font-medium">{label}</p>
-      <span className="text-2xl">{icon}</span>
+      <p className="text-xs sm:text-sm text-gray-500 font-medium">{label}</p>
+      <span className="text-xl sm:text-2xl">{icon}</span>
     </div>
-    <p className={`text-4xl font-bold mt-2 ${color}`}>{value ?? '—'}</p>
+    <p className={`text-2xl sm:text-4xl font-bold mt-1 sm:mt-2 ${color}`}>{value ?? '—'}</p>
   </div>
 );
 
@@ -207,11 +207,11 @@ const AdminDashboard = () => {
       )}
 
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white">
           Admin <span className="text-purple-400">Control Panel</span>
         </h1>
-        <p className="text-gray-500 mt-1">
+        <p className="text-gray-500 mt-1 text-sm sm:text-base">
           Logged in as <span className="text-purple-300 font-medium">{user?.name}</span> · Manage blood inventory, requests, donations, and donors.
         </p>
       </div>
@@ -229,7 +229,7 @@ const AdminDashboard = () => {
       )}
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-1 bg-gray-900 border border-gray-800 rounded-xl p-1 mb-6 w-fit">
+      <div className="tab-bar">
         {TABS.map((tab) => {
           const labels = {
             overview: '📊 Overview', inventory: '🩸 Inventory',
@@ -239,10 +239,10 @@ const AdminDashboard = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+              className={`tab-btn ${
                 activeTab === tab
-                  ? 'bg-purple-700 text-white shadow-lg'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'tab-btn-active bg-purple-700'
+                  : 'tab-btn-inactive'
               }`}
               id={`admin-tab-${tab}`}
             >
