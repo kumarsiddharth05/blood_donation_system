@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../api/axios';
 
 const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-const ROLES = ['donor', 'recipient'];
+const ROLES = ['donor', 'recipient', 'admin'];
 
 const EyeIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-5 h-5">
@@ -317,6 +317,18 @@ const Register = () => {
                     className="form-input"
                     rows={2}
                   />
+                </div>
+              </div>
+            )}
+
+            {/* ── Admin-specific fields ─────────────────────────────── */}
+            {form.role === 'admin' && (
+              <div className="p-4 bg-purple-900/20 border border-purple-800/40 rounded-xl space-y-4">
+                <div className="flex items-start gap-2 mb-2">
+                  <span className="text-purple-400 text-lg">🛡️</span>
+                  <p className="text-purple-300 text-sm">
+                    <strong>Admin account</strong> — you will have full access to manage inventory, approve/reject requests, and manage donors. Note: In a production app, admin registration should be restricted.
+                  </p>
                 </div>
               </div>
             )}
