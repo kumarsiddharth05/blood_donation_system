@@ -86,6 +86,16 @@ async function run() {
     `);
 
     await conn.query(`
+      CREATE TABLE admins (
+        admin_id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id  INT NOT NULL,
+        bank_id  INT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+        FOREIGN KEY (bank_id) REFERENCES blood_banks(bank_id) ON DELETE CASCADE
+      )
+    `);
+
+    await conn.query(`
       CREATE TABLE blood_inventory (
         inventory_id    INT AUTO_INCREMENT PRIMARY KEY,
         bank_id         INT NOT NULL,
@@ -180,9 +190,14 @@ async function run() {
     console.log('✅ Passwords hashed\n');
 
     // ── Seed admin user ──────────────────────────────────────────────
-    await conn.query(
+    const [adminRes] = await conn.query(
       `INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)`,
       ['Admin', 'admin@biet.ac.in', adminHash, 'admin']
+    );
+
+    await conn.query(
+      `INSERT INTO admins (user_id, bank_id) VALUES (?, ?)`,
+      [adminRes.insertId, 1]
     );
 
     // ── Seed donor users ─────────────────────────────────────────────

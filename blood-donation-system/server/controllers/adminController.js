@@ -5,13 +5,16 @@ const db = require('../db/db');
  * Returns full blood inventory across all banks.
  */
 const getInventory = async (req, res) => {
+  const bankId = req.user.profile_id;
   try {
     const [rows] = await db.query(
       `SELECT i.inventory_id, i.blood_group, i.units_available, i.last_updated,
               b.bank_id, b.name AS bank_name, b.location, b.phone AS bank_phone
        FROM blood_inventory i
        JOIN blood_banks b ON i.bank_id = b.bank_id
-       ORDER BY b.name, i.blood_group`
+       WHERE i.bank_id = ?
+       ORDER BY i.blood_group`,
+      [bankId]
     );
     return res.status(200).json({ success: true, message: 'Inventory fetched.', data: rows });
   } catch (err) {
@@ -33,10 +36,11 @@ const updateInventory = async (req, res) => {
   if (units_available < 0) {
     return res.status(400).json({ success: false, message: 'units_available cannot be negative.', data: null });
   }
+  const bankId = req.user.profile_id;
   try {
     const [result] = await db.query(
-      'UPDATE blood_inventory SET units_available = ? WHERE inventory_id = ?',
-      [units_available, inventory_id]
+      'UPDATE blood_inventory SET units_available = ? WHERE inventory_id = ? AND bank_id = ?',
+      [units_available, inventory_id, bankId]
     );
     if (result.affectedRows === 0) {
       return res.status(404).json({ success: false, message: 'Inventory record not found.', data: null });
@@ -53,6 +57,7 @@ const updateInventory = async (req, res) => {
  * Returns all blood requests with recipient and bank info.
  */
 const getAllRequests = async (req, res) => {
+  const bankId = req.user.profile_id;
   try {
     const [rows] = await db.query(
       `SELECT br.request_id, br.blood_group, br.units_needed, br.urgency,
@@ -64,7 +69,9 @@ const getAllRequests = async (req, res) => {
        JOIN recipients r ON br.recipient_id = r.recipient_id
        JOIN users u ON r.user_id = u.user_id
        JOIN blood_banks b ON br.bank_id = b.bank_id
-       ORDER BY br.requested_at DESC`
+       WHERE br.bank_id = ?
+       ORDER BY br.requested_at DESC`,
+      [bankId]
     );
     return res.status(200).json({ success: true, message: 'Requests fetched.', data: rows });
   } catch (err) {
@@ -84,10 +91,11 @@ const updateRequestStatus = async (req, res) => {
   if (!status || !['approved', 'rejected', 'pending'].includes(status)) {
     return res.status(400).json({ success: false, message: "status must be 'approved', 'rejected', or 'pending'.", data: null });
   }
+  const bankId = req.user.profile_id;
   try {
     const [result] = await db.query(
-      'UPDATE blood_requests SET status = ? WHERE request_id = ?',
-      [status, id]
+      'UPDATE blood_requests SET status = ? WHERE request_id = ? AND bank_id = ?',
+      [status, id, bankId]
     );
     if (result.affectedRows === 0) {
       return res.status(404).json({ success: false, message: 'Request not found.', data: null });
@@ -151,6 +159,7 @@ const updateDonorEligibility = async (req, res) => {
  * Returns all donations with donor and bank info.
  */
 const getAllDonations = async (req, res) => {
+  const bankId = req.user.profile_id;
   try {
     const [rows] = await db.query(
       `SELECT d.donation_id, d.donation_date, d.units_donated, d.status,
@@ -161,7 +170,9 @@ const getAllDonations = async (req, res) => {
        JOIN donors dn ON d.donor_id = dn.donor_id
        JOIN users u ON dn.user_id = u.user_id
        JOIN blood_banks b ON d.bank_id = b.bank_id
-       ORDER BY d.donation_date DESC`
+       WHERE d.bank_id = ?
+       ORDER BY d.donation_date DESC`,
+      [bankId]
     );
     return res.status(200).json({ success: true, message: 'Donations fetched.', data: rows });
   } catch (err) {
@@ -181,10 +192,11 @@ const updateDonationStatus = async (req, res) => {
   if (!status || !['pending', 'completed', 'rejected'].includes(status)) {
     return res.status(400).json({ success: false, message: "status must be 'pending', 'completed', or 'rejected'.", data: null });
   }
+  const bankId = req.user.profile_id;
   try {
     const [result] = await db.query(
-      'UPDATE donations SET status = ? WHERE donation_id = ?',
-      [status, id]
+      'UPDATE donations SET status = ? WHERE donation_id = ? AND bank_id = ?',
+      [status, id, bankId]
     );
     if (result.affectedRows === 0) {
       return res.status(404).json({ success: false, message: 'Donation not found.', data: null });
@@ -201,13 +213,14 @@ const updateDonationStatus = async (req, res) => {
  * Returns aggregate counts for the admin dashboard summary cards.
  */
 const getSummary = async (req, res) => {
+  const bankId = req.user.profile_id;
   try {
     const [[{ total_donors }]] = await db.query('SELECT COUNT(*) AS total_donors FROM donors');
     const [[{ total_recipients }]] = await db.query('SELECT COUNT(*) AS total_recipients FROM recipients');
-    const [[{ total_donations }]] = await db.query('SELECT COUNT(*) AS total_donations FROM donations');
-    const [[{ pending_requests }]] = await db.query("SELECT COUNT(*) AS pending_requests FROM blood_requests WHERE status = 'pending'");
-    const [[{ low_inventory_count }]] = await db.query("SELECT COUNT(*) AS low_inventory_count FROM blood_inventory WHERE units_available < 5");
-    const [[{ completed_donations }]] = await db.query("SELECT COUNT(*) AS completed_donations FROM donations WHERE status = 'completed'");
+    const [[{ total_donations }]] = await db.query('SELECT COUNT(*) AS total_donations FROM donations WHERE bank_id = ?', [bankId]);
+    const [[{ pending_requests }]] = await db.query("SELECT COUNT(*) AS pending_requests FROM blood_requests WHERE status = 'pending' AND bank_id = ?", [bankId]);
+    const [[{ low_inventory_count }]] = await db.query("SELECT COUNT(*) AS low_inventory_count FROM blood_inventory WHERE units_available < 5 AND bank_id = ?", [bankId]);
+    const [[{ completed_donations }]] = await db.query("SELECT COUNT(*) AS completed_donations FROM donations WHERE status = 'completed' AND bank_id = ?", [bankId]);
 
     return res.status(200).json({
       success: true,
@@ -232,8 +245,9 @@ const getSummary = async (req, res) => {
  * Returns low_inventory_alert view results.
  */
 const getLowInventory = async (req, res) => {
+  const bankId = req.user.profile_id;
   try {
-    const [rows] = await db.query('SELECT * FROM low_inventory_alert');
+    const [rows] = await db.query('SELECT * FROM low_inventory_alert WHERE bank_name = (SELECT name FROM blood_banks WHERE bank_id = ?)', [bankId]);
     return res.status(200).json({ success: true, message: 'Low inventory alerts fetched.', data: rows });
   } catch (err) {
     console.error('getLowInventory error:', err);

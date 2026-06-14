@@ -106,6 +106,12 @@ const register = async (req, res) => {
       );
       const bankId = bankResult.insertId;
 
+      // Link admin to the blood bank
+      await conn.query(
+        'INSERT INTO admins (user_id, bank_id) VALUES (?, ?)',
+        [userId, bankId]
+      );
+
       // Seed all 8 blood groups in inventory for this bank (starting at 0 units)
       const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
       for (const bg of bloodGroups) {
@@ -180,7 +186,7 @@ const login = async (req, res) => {
       });
     }
 
-    // Fetch profile_id for donor/recipient
+    // Fetch profile_id for donor/recipient/admin
     let profileId = null;
     if (user.role === 'donor') {
       const [d] = await db.query(
@@ -194,6 +200,12 @@ const login = async (req, res) => {
         [user.user_id]
       );
       if (r.length > 0) profileId = r[0].recipient_id;
+    } else if (user.role === 'admin') {
+      const [a] = await db.query(
+        'SELECT bank_id FROM admins WHERE user_id = ?',
+        [user.user_id]
+      );
+      if (a.length > 0) profileId = a[0].bank_id;
     }
 
     const payload = {
