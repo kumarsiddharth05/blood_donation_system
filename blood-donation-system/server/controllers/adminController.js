@@ -243,23 +243,14 @@ const updateDonationStatus = async (req, res) => {
       [status, id, bankId]
     );
 
-    // Replicate database trigger behavior if status changes to completed
+    // Update blood inventory if status changes to completed
     if (status === 'completed' && currentDonation.status !== 'completed') {
-      // 1. after_donation_completed: Update blood inventory
       await conn.query(
         `UPDATE blood_inventory
          SET units_available = units_available + ?
          WHERE bank_id = ?
            AND blood_group = (SELECT blood_group FROM donors WHERE donor_id = ?)`,
         [currentDonation.units_donated, currentDonation.bank_id, currentDonation.donor_id]
-      );
-
-      // 2. after_donation_mark_ineligible: Update donor eligibility
-      await conn.query(
-        `UPDATE donors
-         SET is_eligible = FALSE, last_donation_date = ?
-         WHERE donor_id = ?`,
-        [currentDonation.donation_date, currentDonation.donor_id]
       );
     }
 
