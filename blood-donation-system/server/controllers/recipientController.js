@@ -194,7 +194,7 @@ const getProfile = async (req, res) => {
   const { id } = req.params;
   try {
     const [rows] = await db.query(
-      `SELECT r.recipient_id, r.blood_group_needed, r.phone, r.address, r.medical_condition,
+      `SELECT r.recipient_id, r.blood_group_needed, r.phone, r.address,
               u.name, u.email, u.created_at
        FROM recipients r
        JOIN users u ON r.user_id = u.user_id
@@ -217,7 +217,7 @@ const getProfile = async (req, res) => {
  */
 const updateProfile = async (req, res) => {
   const { id } = req.params;
-  const { blood_group_needed, phone, address, medical_condition } = req.body;
+  const { blood_group_needed, phone, address } = req.body;
 
   if (!phone || !address) {
     return res.status(400).json({
@@ -230,9 +230,9 @@ const updateProfile = async (req, res) => {
   try {
     const [result] = await db.query(
       `UPDATE recipients
-       SET blood_group_needed = ?, phone = ?, address = ?, medical_condition = ?
+       SET blood_group_needed = ?, phone = ?, address = ?
        WHERE recipient_id = ?`,
-      [blood_group_needed, phone, address, medical_condition || null, id]
+      [blood_group_needed, phone, address, id]
     );
     if (result.affectedRows === 0) {
       return res.status(404).json({ success: false, message: 'Recipient not found.', data: null });
